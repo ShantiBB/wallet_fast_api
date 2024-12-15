@@ -3,15 +3,8 @@ from uuid import UUID
 from starlette import status
 from fastapi import APIRouter
 
-from app.core.database import SessionDep
-from app.wallet.controllers import (
-    list_wallet,
-    add_wallet,
-    get_wallet_by_id,
-    update_wallet_by_id,
-    delete_wallet_by_id,
-    create_transaction_wallet
-)
+from app.core.database.db_helper import AsyncSessionDep
+from app.wallet.controllers import WalletCRUD
 from app.wallet.schemas import (
     WalletCreateSchema,
     WalletSchema,
@@ -30,8 +23,11 @@ router = APIRouter(
     summary='Получить список кошельков',
     status_code=status.HTTP_200_OK
 )
-async def list_wallets_view(db_session: SessionDep) -> list[WalletListSchema]:
-    return await list_wallet(db_session)
+async def list_wallets_view(
+        db_session: AsyncSessionDep
+) -> list[WalletListSchema]:
+    wallet_crud = WalletCRUD(db_session)
+    return await wallet_crud.list_wallet()
 
 
 @router.get(
@@ -41,9 +37,10 @@ async def list_wallets_view(db_session: SessionDep) -> list[WalletListSchema]:
 )
 async def get_wallet_view(
     wallet_id: UUID,
-    db_session: SessionDep
+    db_session: AsyncSessionDep
 ) -> WalletSchema:
-    return await get_wallet_by_id(wallet_id, db_session)
+    wallet_crud = WalletCRUD(db_session)
+    return await wallet_crud.get_wallet_by_id(wallet_id)
 
 
 @router.post(
@@ -53,9 +50,10 @@ async def get_wallet_view(
 )
 async def create_wallet_view(
     data: WalletCreateSchema,
-    db_session: SessionDep
+    db_session: AsyncSessionDep
 ) -> WalletSchema:
-    wallet = await add_wallet(data, db_session)
+    wallet_crud = WalletCRUD(db_session)
+    wallet = await wallet_crud.add_wallet(data)
 
     return WalletSchema(
         id=wallet.id,
@@ -73,12 +71,12 @@ async def create_wallet_view(
 async def update_wallet_view(
     wallet_id: UUID,
     data: WalletCreateSchema,
-    db_session: SessionDep
+    db_session: AsyncSessionDep
 ) -> WalletSchema:
-    return await update_wallet_by_id(
+    wallet_crud = WalletCRUD(db_session)
+    return await wallet_crud.update_wallet_by_id(
         wallet_id=wallet_id,
         data=data,
-        db_session=db_session
     )
 
 
@@ -89,9 +87,10 @@ async def update_wallet_view(
 )
 async def delete_wallet_view(
     wallet_id: UUID,
-    db_session: SessionDep
+    db_session: AsyncSessionDep
 ) -> None:
-    await delete_wallet_by_id(wallet_id, db_session)
+    wallet_crud = WalletCRUD(db_session)
+    await wallet_crud.delete_wallet_by_id(wallet_id)
 
 
 @router.post(
@@ -101,17 +100,15 @@ async def delete_wallet_view(
 )
 async def update_wallet_balance_view(
     wallet_id: UUID,
-    data: TransactionSchema,
-    db_session: SessionDep
+    data: TransactionSchema
 ) -> dict[str, str]:
     dict_data = data.model_dump()
     operation_type = dict_data.get('operation_type')
     amount = dict_data.get('amount')
 
-    return await create_transaction_wallet(
+    wallet_crud = WalletCRUD()
+    return await wallet_crud.create_transaction_wallet(
         wallet_id=wallet_id,
-        dict_data=dict_data,
         operation_type=operation_type,
-        amount=amount,
-        db_session=db_session
+        amount=amount
     )
