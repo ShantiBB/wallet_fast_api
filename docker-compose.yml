@@ -1,0 +1,26 @@
+services:
+  redis:
+    image: "redis:latest"
+    ports:
+      - "6379:6379"
+  rabbitmq:
+    image: "rabbitmq:latest"
+    ports:
+      - "5672:5672"
+
+  postgres:
+    image: "postgres:latest"
+    environment:
+      - POSTGRES_USER=${POSTGRES__USER}
+      - POSTGRES_PASSWORD=${POSTGRES__PASSWORD}
+      - POSTGRES_HOST=${POSTGRES__HOST}
+      - POSTGRES_PORT=${POSTGRES__PORT}
+      - POSTGRES_DB=${POSTGRES__NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:
+    driver: local
