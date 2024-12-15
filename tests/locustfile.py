@@ -10,20 +10,20 @@ class ApiTest(SequentialTaskSet):
             'operation_type': 'deposit',
             'amount': random.randint(10, 100)
         }
-        wallet_id = '38e4b5c1-626c-4273-a4c0-531d416ee6bc'
+        wallet_id = '2cd801ce-275b-4d50-8dbb-5299d82b3f22'
         absolute_url = f'/api/v1/wallets/{wallet_id}/operation/'
         self.client.post(absolute_url, json=data)
 
-    @task(2)
-    def get_items(self):
-        absolute_url = '/api/v1/wallets/'
-        self.client.get(absolute_url)
-
-    @task(3)
-    def get_item(self):
-        wallet_id = '38e4b5c1-626c-4273-a4c0-531d416ee6bc'
-        absolute_url = f'/api/v1/wallets/{wallet_id}/'
-        self.client.get(absolute_url)
+    # @task(2)
+    # def get_items(self):
+    #     absolute_url = '/api/v1/wallets/'
+    #     self.client.get(absolute_url)
+    #
+    # @task(3)
+    # def get_item(self):
+    #     wallet_id = '38e4b5c1-626c-4273-a4c0-531d416ee6bc'
+    #     absolute_url = f'/api/v1/wallets/{wallet_id}/'
+    #     self.client.get(absolute_url)
 
 
 class UserBehavior(HttpUser):

@@ -17,6 +17,8 @@ asyncio = "^3.4.3"
 fastapi = "^0.115.6"
 locust = "^2.32.4"
 asyncpg = "^0.30.0"
+celery = {extras = ["redis"], version = "^5.4.0"}
+psycopg2 = "^2.9.10"
 
 
 [tool.poetry.group.dev.dependencies]
