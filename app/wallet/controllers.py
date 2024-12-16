@@ -19,7 +19,7 @@ class WalletCRUD:
     def __init__(self, db_session: AsyncSessionDep = None):
         self.db_session = db_session
 
-    async def list_wallet(self) -> WalletListSchema:
+    async def list(self) -> WalletListSchema:
         query = select(
             Wallet.id,
             Wallet.title,
@@ -31,7 +31,7 @@ class WalletCRUD:
 
         return wallets
 
-    async def add_wallet(self, data: WalletCreateSchema,) -> Wallet:
+    async def create(self, data: WalletCreateSchema,) -> Wallet:
         wallet = Wallet(**data.model_dump())
 
         self.db_session.add(wallet)
@@ -39,7 +39,7 @@ class WalletCRUD:
 
         return wallet
 
-    async def get_wallet_by_id(self, wallet_id: UUID,) -> WalletSchema:
+    async def get_by_id(self, wallet_id: UUID,) -> WalletSchema:
         query = select(Wallet).filter_by(id=wallet_id)
 
         result = await self.db_session.execute(query)
@@ -49,7 +49,7 @@ class WalletCRUD:
 
         return wallet
 
-    async def update_wallet_by_id(
+    async def update_by_id(
         self,
         wallet_id: UUID,
         data: WalletCreateSchema
@@ -75,7 +75,7 @@ class WalletCRUD:
 
         return wallet
 
-    async def delete_wallet_by_id(self, wallet_id: UUID) -> None:
+    async def delete_by_id(self, wallet_id: UUID) -> None:
         query = select(Wallet.id).filter_by(id=wallet_id)
         result = await self.db_session.execute(query)
         wallet_id = result.scalar_one_or_none()
@@ -87,7 +87,7 @@ class WalletCRUD:
         await self.db_session.commit()
 
     @staticmethod
-    async def create_transaction_wallet(
+    async def create_transaction(
         wallet_id: UUID,
         operation_type: str,
         amount: Decimal
@@ -97,4 +97,5 @@ class WalletCRUD:
             operation_type,
             amount
         )
+
         return {'status': 'Success'}

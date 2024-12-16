@@ -7,11 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.wallet.models import Wallet
 from app.core.database.db_helper import sync_database
-from app.api.validations import (
-    valid_exist_obj,
-    valid_operation_type,
-    valid_balance
-)
+from app.api.validations import WalletValidation
 
 
 @shared_task(
@@ -56,8 +52,8 @@ def get_wallet_balance_by_id(
     result = db_session.execute(query)
     balance = result.scalar_one_or_none()
 
-    valid_exist_obj(balance)
-    valid_operation_type(operation_type)
-    valid_balance(operation_type, amount, balance)
+    WalletValidation.exist_obj(balance)
+    WalletValidation.operation_type(operation_type)
+    WalletValidation.balance(operation_type, amount, balance)
 
     return balance
