@@ -1,21 +1,15 @@
-from uuid import uuid4
 from decimal import Decimal
 
 from sqlalchemy import Numeric, String
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy.dialects.postgresql import UUID
 
 from app.core.database.base import Base
+from app.core.database.mixins import IDMixin
 
 
-class Wallet(Base):
+class Wallet(Base, IDMixin):
     __tablename__ = "wallets"
 
-    id: Mapped[UUID] = mapped_column(
-        UUID(as_uuid=True),
-        primary_key=True,
-        default=uuid4
-    )
     title: Mapped[str] = mapped_column(
         String(100)
     )
