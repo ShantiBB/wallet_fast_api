@@ -6,7 +6,7 @@ from sqlalchemy import select, update, delete
 from app.core.database.db_helper import AsyncSessionDep
 from app.wallet.models import Wallet
 from app.wallet.tasks import transaction_wallet_task
-from app.api.validations import WalletValidation
+from app.api.v1.validations import WalletValidation
 from app.wallet.schemas import (
     WalletListSchema,
     WalletSchema,
