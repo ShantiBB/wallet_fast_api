@@ -87,15 +87,38 @@ class WalletCRUD:
         await self.db_session.commit()
 
     @staticmethod
+    async def get_wallet_balance_by_id(
+            wallet_id: UUID,
+            db_session: AsyncSessionDep
+    ) -> Decimal:
+        query = select(Wallet.balance).filter_by(id=wallet_id)
+        result = await db_session.execute(query)
+        balance = result.scalar_one_or_none()
+
+        return balance
+
     async def create_transaction(
+        self,
         wallet_id: UUID,
         operation_type: str,
-        amount: Decimal
+        amount: Decimal,
+        db_session: AsyncSessionDep
     ) -> dict[str, str]:
-        result = transaction_wallet_task.delay(
-            wallet_id,
-            operation_type,
-            amount
+
+        balance = await self.get_wallet_balance_by_id(
+            wallet_id=wallet_id,
+            db_session=db_session
+        )
+
+        WalletValidation.exist_obj(balance)
+        WalletValidation.operation_type(operation_type)
+        WalletValidation.balance(operation_type, amount, balance)
+
+        transaction_wallet_task.delay(
+            wallet_id=wallet_id,
+            balance=balance,
+            operation_type=operation_type,
+            amount=amount
         )
 
         return {'status': 'Success'}

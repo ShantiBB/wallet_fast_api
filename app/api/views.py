@@ -27,7 +27,7 @@ async def list_wallets_view(
         db_session: AsyncSessionDep
 ) -> list[WalletListSchema]:
     wallet_crud = WalletCRUD(db_session)
-    return await wallet_crud.list_wallet()
+    return await wallet_crud.list()
 
 
 @router.get(
@@ -40,7 +40,7 @@ async def get_wallet_view(
     db_session: AsyncSessionDep
 ) -> WalletSchema:
     wallet_crud = WalletCRUD(db_session)
-    return await wallet_crud.get_wallet_by_id(wallet_id)
+    return await wallet_crud.get_by_id(wallet_id)
 
 
 @router.post(
@@ -53,7 +53,7 @@ async def create_wallet_view(
     db_session: AsyncSessionDep
 ) -> WalletSchema:
     wallet_crud = WalletCRUD(db_session)
-    wallet = await wallet_crud.add_wallet(data)
+    wallet = await wallet_crud.create(data)
 
     return WalletSchema(
         id=wallet.id,
@@ -74,7 +74,7 @@ async def update_wallet_view(
     db_session: AsyncSessionDep
 ) -> WalletSchema:
     wallet_crud = WalletCRUD(db_session)
-    return await wallet_crud.update_wallet_by_id(
+    return await wallet_crud.update_by_id(
         wallet_id=wallet_id,
         data=data,
     )
@@ -90,7 +90,7 @@ async def delete_wallet_view(
     db_session: AsyncSessionDep
 ) -> None:
     wallet_crud = WalletCRUD(db_session)
-    await wallet_crud.delete_wallet_by_id(wallet_id)
+    await wallet_crud.delete_by_id(wallet_id)
 
 
 @router.post(
@@ -100,15 +100,17 @@ async def delete_wallet_view(
 )
 async def update_wallet_balance_view(
     wallet_id: UUID,
-    data: TransactionSchema
+    data: TransactionSchema,
+    db_session: AsyncSessionDep
 ) -> dict[str, str]:
     dict_data = data.model_dump()
     operation_type = dict_data.get('operation_type')
     amount = dict_data.get('amount')
 
     wallet_crud = WalletCRUD()
-    return await wallet_crud.create_transaction_wallet(
+    return await wallet_crud.create_transaction(
         wallet_id=wallet_id,
         operation_type=operation_type,
-        amount=amount
+        amount=amount,
+        db_session=db_session
     )
