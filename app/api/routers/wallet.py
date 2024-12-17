@@ -3,6 +3,7 @@ from uuid import UUID
 from starlette import status
 from fastapi import APIRouter
 
+from app.authentication.user_permissions import CurrentUserDep
 from app.core.database.db_helper import AsyncSessionDep
 from app.wallet.controllers import WalletCRUD
 from app.wallet.schemas import (
@@ -24,6 +25,7 @@ router = APIRouter(
     status_code=status.HTTP_200_OK
 )
 async def list_wallets_view(
+        user: CurrentUserDep,
         db_session: AsyncSessionDep
 ) -> list[WalletListSchema]:
     wallet_crud = WalletCRUD(db_session)
@@ -37,6 +39,7 @@ async def list_wallets_view(
 )
 async def get_wallet_view(
     wallet_id: UUID,
+    user: CurrentUserDep,
     db_session: AsyncSessionDep
 ) -> WalletSchema:
     wallet_crud = WalletCRUD(db_session)
@@ -50,6 +53,7 @@ async def get_wallet_view(
 )
 async def create_wallet_view(
     data: WalletCreateSchema,
+    user: CurrentUserDep,
     db_session: AsyncSessionDep
 ) -> WalletSchema:
     wallet_crud = WalletCRUD(db_session)
@@ -71,6 +75,7 @@ async def create_wallet_view(
 async def update_wallet_view(
     wallet_id: UUID,
     data: WalletCreateSchema,
+    user: CurrentUserDep,
     db_session: AsyncSessionDep
 ) -> WalletSchema:
     wallet_crud = WalletCRUD(db_session)
@@ -87,6 +92,7 @@ async def update_wallet_view(
 )
 async def delete_wallet_view(
     wallet_id: UUID,
+    user: CurrentUserDep,
     db_session: AsyncSessionDep
 ) -> None:
     wallet_crud = WalletCRUD(db_session)
@@ -101,6 +107,7 @@ async def delete_wallet_view(
 async def update_wallet_balance_view(
     wallet_id: UUID,
     data: TransactionSchema,
+    user: CurrentUserDep,
     db_session: AsyncSessionDep
 ) -> dict[str, str]:
     dict_data = data.model_dump()

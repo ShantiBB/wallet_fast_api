@@ -13,7 +13,6 @@ fastapi_users = FastAPIUsers[User, uuid.UUID](
     [authentication_backend],
 )
 
-
 router = APIRouter(
     prefix='/auth',
     tags=['Аутентификация'],
@@ -22,4 +21,7 @@ router = APIRouter(
 router.include_router(fastapi_users.get_auth_router(authentication_backend))
 router.include_router(
     fastapi_users.get_register_router(UserRead, UserCreate),
+)
+router.include_router(
+    fastapi_users.get_verify_router(UserRead)
 )
