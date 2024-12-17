@@ -13,13 +13,13 @@ from app.wallet.schemas import (
 )
 
 router = APIRouter(
-    prefix='/api/v1',
+    prefix='/wallets',
     tags=['Кошельки']
 )
 
 
 @router.get(
-    path="/wallets/",
+    path="",
     summary='Получить список кошельков',
     status_code=status.HTTP_200_OK
 )
@@ -31,7 +31,7 @@ async def list_wallets_view(
 
 
 @router.get(
-    path="/wallets/{wallet_id}/",
+    path="/{wallet_id}",
     summary='Получить кошелёк по id',
     status_code=status.HTTP_200_OK
 )
@@ -44,7 +44,7 @@ async def get_wallet_view(
 
 
 @router.post(
-    path="/wallets/",
+    path="",
     summary='Добавить новый кошелёк',
     status_code=status.HTTP_201_CREATED
 )
@@ -64,7 +64,7 @@ async def create_wallet_view(
 
 
 @router.put(
-    path="/wallets/{wallet_id}/",
+    path="/{wallet_id}",
     summary='Обновить кошелёк',
     status_code=status.HTTP_200_OK
 )
@@ -81,7 +81,7 @@ async def update_wallet_view(
 
 
 @router.delete(
-    path="/wallets/{wallet_id}/",
+    path="/{wallet_id}",
     summary='Удалить кошелёк',
     status_code=status.HTTP_204_NO_CONTENT
 )
@@ -94,7 +94,7 @@ async def delete_wallet_view(
 
 
 @router.post(
-    path="/wallets/{wallet_id}/operation/",
+    path="/{wallet_id}/operation",
     summary='Увеличить или уменьшить баланс кошелька',
     status_code=status.HTTP_202_ACCEPTED
 )
